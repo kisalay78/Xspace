@@ -18,11 +18,15 @@ class RoundSelectionScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+
             roundButton(context, "Coding Round", Colors.blue),
             const SizedBox(height: 20),
-            roundButton("Aptitude Round", Colors.orange),
+
+            roundButton(context, "Aptitude Round", Colors.orange),
             const SizedBox(height: 20),
-            roundButton("HR Interview", Colors.green),
+
+            roundButton(context, "HR Interview", Colors.green),
+
           ],
         ),
       ),
@@ -38,6 +42,7 @@ class RoundSelectionScreen extends StatelessWidget {
           backgroundColor: color,
         ),
         onPressed: () {
+
           if (text == "Coding Round") {
             Navigator.push(
               context,
@@ -45,14 +50,18 @@ class RoundSelectionScreen extends StatelessWidget {
                 builder: (context) => const CodingRoundScreen(),
               ),
             );
-          } else if (text == "Aptitude Round") {
+          }
+
+          else if (text == "Aptitude Round") {
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => const AptitudeRoundScreen(),
               ),
             );
-          } else if (text == "HR Interview") {
+          }
+
+          else if (text == "HR Interview") {
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -60,6 +69,7 @@ class RoundSelectionScreen extends StatelessWidget {
               ),
             );
           }
+
         },
         child: Text(
           text,
