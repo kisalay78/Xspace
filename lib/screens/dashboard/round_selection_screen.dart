@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../rounds/coding_round_screen.dart';
 
 class RoundSelectionScreen extends StatelessWidget {
   const RoundSelectionScreen({super.key});
@@ -17,7 +18,7 @@ class RoundSelectionScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
 
-            roundButton("Coding Round", Colors.blue),
+            roundButton(context, "Coding Round", Colors.blue),
             const SizedBox(height: 20),
 
             roundButton("Aptitude Round", Colors.orange),
@@ -31,20 +32,31 @@ class RoundSelectionScreen extends StatelessWidget {
     );
   }
 
-  Widget roundButton(String text, Color color) {
-    return SizedBox(
-      width: double.infinity,
-      height: 60,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: color,
-        ),
-        onPressed: () {},
-        child: Text(
-          text,
-          style: const TextStyle(fontSize: 20),
-        ),
+  Widget roundButton(BuildContext context, String text, Color color) {
+  return SizedBox(
+    width: double.infinity,
+    height: 60,
+    child: ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: color,
       ),
-    );
-  }
+      onPressed: () {
+
+        if (text == "Coding Round") {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const CodingRoundScreen(),
+            ),
+          );
+        }
+
+      },
+      child: Text(
+        text,
+        style: const TextStyle(fontSize: 20),
+      ),
+    ),
+  );
+}
 }
