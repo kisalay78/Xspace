@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'login_screen.dart';
 class SignupScreen extends StatelessWidget {
   const SignupScreen({super.key});
 
@@ -67,14 +67,19 @@ class SignupScreen extends StatelessWidget {
               height: 50,
               child: ElevatedButton(
                 onPressed: () {
-                  // Signup logic later
-                },
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LoginScreen(),
+        ),
+      );
+    },
                 child: const Text(
                   "Create Account",
                   style: TextStyle(fontSize: 18),
-                ),
-              ),
-            ),
+    ),
+  ),
+)
 
           ],
         ),
