@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../dashboard/difficulty_screen.dart';
+import 'signup_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -91,10 +92,32 @@ class LoginScreen extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            const Text(
-              "Don't have an account? Sign Up",
-              style: TextStyle(color: Colors.white),
-            )
+            Row(
+  mainAxisAlignment: MainAxisAlignment.center,
+  children: [
+    const Text(
+      "Don't have an account? ",
+      style: TextStyle(color: Colors.white),
+    ),
+    GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const SignupScreen(),
+          ),
+        );
+      },
+      child: const Text(
+        "Sign Up",
+        style: TextStyle(
+          color: Colors.yellow,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    ),
+  ],
+)
           ],
         ),
       ),
