@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../rounds/coding_round_screen.dart';
+import '../rounds/aptitude_round_screen.dart';
+import '../rounds/hr_round_screen.dart';
 
 class RoundSelectionScreen extends StatelessWidget {
   const RoundSelectionScreen({super.key});
@@ -11,21 +13,16 @@ class RoundSelectionScreen extends StatelessWidget {
         title: const Text("Interview Rounds"),
         centerTitle: true,
       ),
-
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-
             roundButton(context, "Coding Round", Colors.blue),
             const SizedBox(height: 20),
-
             roundButton("Aptitude Round", Colors.orange),
             const SizedBox(height: 20),
-
             roundButton("HR Interview", Colors.green),
-
           ],
         ),
       ),
@@ -33,30 +30,42 @@ class RoundSelectionScreen extends StatelessWidget {
   }
 
   Widget roundButton(BuildContext context, String text, Color color) {
-  return SizedBox(
-    width: double.infinity,
-    height: 60,
-    child: ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: color,
+    return SizedBox(
+      width: double.infinity,
+      height: 60,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color,
+        ),
+        onPressed: () {
+          if (text == "Coding Round") {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const CodingRoundScreen(),
+              ),
+            );
+          } else if (text == "Aptitude Round") {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const AptitudeRoundScreen(),
+              ),
+            );
+          } else if (text == "HR Interview") {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const HrRoundScreen(),
+              ),
+            );
+          }
+        },
+        child: Text(
+          text,
+          style: const TextStyle(fontSize: 20),
+        ),
       ),
-      onPressed: () {
-
-        if (text == "Coding Round") {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const CodingRoundScreen(),
-            ),
-          );
-        }
-
-      },
-      child: Text(
-        text,
-        style: const TextStyle(fontSize: 20),
-      ),
-    ),
-  );
-}
+    );
+  }
 }
