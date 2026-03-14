@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "534616756946",
+    "project_id": "ai-interview-simulator-a8230",
+    "storage_bucket": "ai-interview-simulator-a8230.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:534616756946:android:4accf6ffc7f72fd5f7130b",
+        "android_client_info": {
+          "package_name": "com.example.xspace"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJkg7dLBHxHwh1jnj9Dup8KdU4A8L-XPo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
