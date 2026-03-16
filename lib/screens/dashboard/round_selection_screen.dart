@@ -65,7 +65,7 @@ class RoundSelectionScreen extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const HrRoundScreen(),
+                builder: (context) =>  HRRoundScreen(),
               ),
             );
           }

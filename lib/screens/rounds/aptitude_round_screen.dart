@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import '../result/result_screen.dart';
 
 class AptitudeRoundScreen extends StatefulWidget {
   const AptitudeRoundScreen({super.key});
@@ -79,7 +80,10 @@ class _AptitudeRoundScreenState extends State<AptitudeRoundScreen> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (_) => ResultScreen(score: score),
+        builder: (_) => ResultScreen(
+          aptitudeScore: score,
+          codingScore: 0,
+        ),
       ),
     );
   }
