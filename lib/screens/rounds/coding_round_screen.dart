@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../result/result_screen.dart';
+import '../../services/code_runner.dart';
+import '../../services/history_service.dart'; // ✅ ADDED
 
 class CodingRoundScreen extends StatefulWidget {
   const CodingRoundScreen({super.key});
@@ -11,14 +13,17 @@ class CodingRoundScreen extends StatefulWidget {
 
 class _CodingRoundScreenState extends State<CodingRoundScreen> {
 
-  // TIMER
   Timer? timer;
-  int timeLeft = 2400; // 40 minutes
+  int timeLeft = 2400;
 
-  // SCORE
   int passedQuestions = 0;
+  int currentQuestion = 0;
 
-  // SAMPLE CODING QUESTIONS
+  bool checked = false;
+  List<bool?> testResults = [];
+
+  TextEditingController codeController = TextEditingController();
+
   List codingQuestions = [
     {
       "problem": "Find max element in array",
@@ -36,20 +41,14 @@ class _CodingRoundScreenState extends State<CodingRoundScreen> {
     }
   ];
 
-  int currentQuestion = 0;
-
-  TextEditingController codeController = TextEditingController();
-
   @override
   void initState() {
     super.initState();
     startTimer();
   }
 
-  // TIMER FUNCTION
   void startTimer() {
     timer = Timer.periodic(const Duration(seconds: 1), (t) {
-
       if (timeLeft == 0) {
         t.cancel();
         goToResult();
@@ -58,50 +57,53 @@ class _CodingRoundScreenState extends State<CodingRoundScreen> {
       setState(() {
         timeLeft--;
       });
-
     });
   }
 
-  // CHECK TEST CASE
-  bool checkAnswer(String userOutput, String expectedOutput){
-    return userOutput.trim() == expectedOutput.trim();
-  }
-
-  // SUBMIT CODE
-  void submitAnswer() {
-
+  // ✅ RUN TEST CASES USING BACKEND
+  Future<void> checkTestCases() async {
     var question = codingQuestions[currentQuestion];
 
-    int passedTestCases = 0;
+    List<bool?> results = [];
 
-    for(var test in question["testCases"]) {
+    for (var test in question["testCases"]) {
 
+      String input = test["input"];
       String expected = test["output"];
 
-      // here userOutput should come from your code execution API
-      String userOutput = codeController.text;
+      try {
+        String result = await runPythonCode(
+          codeController.text,
+          input,
+        );
 
-      if(checkAnswer(userOutput, expected)) {
-        passedTestCases++;
+        if (result.trim() == expected.trim()) {
+          results.add(true);
+        } else {
+          results.add(false);
+        }
+
+      } catch (e) {
+        results.add(false);
       }
-
     }
 
-    if(passedTestCases >= 2) {
-      passedQuestions++;
-    }
-
-    if(currentQuestion < codingQuestions.length - 1) {
-      setState(() {
-        currentQuestion++;
-      });
-    } else {
-      goToResult();
-    }
+    setState(() {
+      testResults = results;
+      checked = true;
+    });
   }
 
-  void goToResult() {
+  // ✅ FINAL RESULT + SAVE HISTORY
+  Future<void> goToResult() async {
     timer?.cancel();
+
+    // 🔥 SAVE HISTORY HERE
+    await saveHistory(
+      roundType: "coding",
+      difficulty: "easy",
+      score: passedQuestions,
+    );
 
     Navigator.pushReplacement(
       context,
@@ -135,40 +137,187 @@ class _CodingRoundScreenState extends State<CodingRoundScreen> {
       body: Padding(
         padding: const EdgeInsets.all(20),
 
-        child: Column(
-          children: [
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
 
-            Text(
-              "Time Left: $minutes:$seconds",
-              style: const TextStyle(fontSize: 22),
-            ),
+            children: [
 
-            const SizedBox(height: 20),
-
-            Text(
-              question["problem"],
-              style: const TextStyle(fontSize: 18),
-            ),
-
-            const SizedBox(height: 20),
-
-            TextField(
-              controller: codeController,
-              maxLines: 10,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: "Write your code output here...",
+              // ⏱ TIMER
+              Text(
+                "Time Left: $minutes:$seconds",
+                style: const TextStyle(fontSize: 22),
               ),
-            ),
 
-            const SizedBox(height: 20),
+              const SizedBox(height: 20),
 
-            ElevatedButton(
-              onPressed: submitAnswer,
-              child: const Text("Submit"),
-            )
+              // 🧠 QUESTION + EXAMPLE
+              Text(
+                question["problem"],
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
 
-          ],
+              const SizedBox(height: 10),
+
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+
+                    const Text(
+                      "Example:",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    ...question["testCases"].map<Widget>((test) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Text(
+                          "Input: ${test["input"]}\nOutput: ${test["output"]}",
+                        ),
+                      );
+                    }).toList(),
+
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // 💻 CODE BOX
+              TextField(
+                controller: codeController,
+                maxLines: 10,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: "Write your Python code here...\nExample: print(max(arr))",
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // ▶ RUN BUTTON
+              Center(
+                child: ElevatedButton(
+                  onPressed: () async {
+                    await checkTestCases();
+                  },
+                  child: const Text("Run Code"),
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              // 📊 TEST CASES
+              const Text(
+                "Test Cases:",
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold),
+              ),
+
+              const SizedBox(height: 10),
+
+              ...question["testCases"].asMap().entries.map((entry) {
+
+                int index = entry.key;
+                var test = entry.value;
+
+                bool? result;
+
+                if (checked && testResults.length > index) {
+                  result = testResults[index];
+                }
+
+                return Card(
+                  child: ListTile(
+                    title: Text("Input: ${test["input"]}"),
+                    subtitle: Text("Expected: ${test["output"]}"),
+                    trailing: result == null
+                        ? const Text("Not Checked")
+                        : Icon(
+                            result
+                                ? Icons.check_circle
+                                : Icons.cancel,
+                            color: result
+                                ? Colors.green
+                                : Colors.red,
+                          ),
+                  ),
+                );
+              }).toList(),
+
+              const SizedBox(height: 30),
+
+              // ⬅ ➡ NAVIGATION
+              Row(
+                mainAxisAlignment:
+                    MainAxisAlignment.spaceBetween,
+
+                children: [
+
+                  ElevatedButton(
+                    onPressed: currentQuestion > 0
+                        ? () {
+                            setState(() {
+                              currentQuestion--;
+                              codeController.clear();
+                              checked = false;
+                              testResults = [];
+                            });
+                          }
+                        : null,
+                    child: const Text("Previous"),
+                  ),
+
+                  ElevatedButton(
+                    onPressed: () {
+
+                      int passed = testResults
+                          .where((e) => e == true)
+                          .length;
+
+                      if (passed >= 2) {
+                        passedQuestions++;
+                      }
+
+                      if (currentQuestion <
+                          codingQuestions.length - 1) {
+
+                        setState(() {
+                          currentQuestion++;
+                          codeController.clear();
+                          checked = false;
+                          testResults = [];
+                        });
+
+                      } else {
+
+                        goToResult(); // ✅ FINAL CALL
+                      }
+                    },
+                    child: const Text("Next"),
+                  ),
+
+                ],
+              ),
+
+            ],
+          ),
         ),
       ),
     );

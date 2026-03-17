@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../result/result_screen.dart';
+import '../../services/history_service.dart'; // ✅ ADD THIS
 
 class AptitudeRoundScreen extends StatefulWidget {
   const AptitudeRoundScreen({super.key});
@@ -11,14 +12,14 @@ class AptitudeRoundScreen extends StatefulWidget {
 
 class _AptitudeRoundScreenState extends State<AptitudeRoundScreen> {
 
-  // TIMER VARIABLES
+  // TIMER
   Timer? timer;
   int timeLeft = 900; // 15 minutes
 
-  // SCORE VARIABLE
+  // SCORE
   int score = 0;
 
-  // SAMPLE QUESTIONS (later replace with JSON)
+  // QUESTIONS
   List questions = [
     {
       "question": "25% of 200?",
@@ -43,7 +44,6 @@ class _AptitudeRoundScreenState extends State<AptitudeRoundScreen> {
   // TIMER FUNCTION
   void startTimer() {
     timer = Timer.periodic(const Duration(seconds: 1), (t) {
-
       if (timeLeft == 0) {
         t.cancel();
         goToResult();
@@ -52,13 +52,11 @@ class _AptitudeRoundScreenState extends State<AptitudeRoundScreen> {
       setState(() {
         timeLeft--;
       });
-
     });
   }
 
   // CHECK ANSWER
   void checkAnswer(String selected) {
-
     var question = questions[currentQuestion];
 
     if (selected == question['answer']) {
@@ -74,8 +72,16 @@ class _AptitudeRoundScreenState extends State<AptitudeRoundScreen> {
     }
   }
 
-  void goToResult() {
+  // ✅ RESULT + SAVE HISTORY
+  Future<void> goToResult() async {
     timer?.cancel();
+
+    // 🔥 SAVE HISTORY
+    await saveHistory(
+      roundType: "aptitude",
+      difficulty: "easy",
+      score: score,
+    );
 
     Navigator.pushReplacement(
       context,
@@ -125,15 +131,16 @@ class _AptitudeRoundScreenState extends State<AptitudeRoundScreen> {
           const SizedBox(height: 20),
 
           ...question['options'].map<Widget>((option) {
-
-            return ElevatedButton(
-              onPressed: () {
-                checkAnswer(option);
-              },
-              child: Text(option),
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: ElevatedButton(
+                onPressed: () {
+                  checkAnswer(option);
+                },
+                child: Text(option),
+              ),
             );
-
-          }).toList()
+          }).toList(),
 
         ],
       ),

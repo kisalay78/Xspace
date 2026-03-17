@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../rounds/coding_round_screen.dart';
 import '../rounds/aptitude_round_screen.dart';
 import '../rounds/hr_round_screen.dart';
+import '../history/history_screen.dart'; // ✅ ADD THIS
 
 class RoundSelectionScreen extends StatelessWidget {
   const RoundSelectionScreen({super.key});
@@ -12,9 +13,26 @@ class RoundSelectionScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Interview Rounds"),
         centerTitle: true,
+
+        // ✅ ADD HISTORY ICON (BEST UI)
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.history),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const HistoryScreen(),
+                ),
+              );
+            },
+          )
+        ],
       ),
+
       body: Padding(
         padding: const EdgeInsets.all(20),
+
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -26,7 +44,20 @@ class RoundSelectionScreen extends StatelessWidget {
             const SizedBox(height: 20),
 
             roundButton(context, "HR Interview", Colors.green),
+            const SizedBox(height: 30),
 
+            // ✅ EXTRA BUTTON (OPTIONAL)
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const HistoryScreen(),
+                  ),
+                );
+              },
+              child: const Text("View History"),
+            ),
           ],
         ),
       ),
@@ -69,8 +100,8 @@ class RoundSelectionScreen extends StatelessWidget {
               ),
             );
           }
-
         },
+
         child: Text(
           text,
           style: const TextStyle(fontSize: 20),
